@@ -1,0 +1,8 @@
+apache-airflow
+apache-airflow[postgres]
+apache-airflow-providers-postgres
+apache-airflow-providers-docker
+apache-airflow-providers-ssh
+apache-airflow-providers-cncf-kubernetes
+
+psycopg2-binary
