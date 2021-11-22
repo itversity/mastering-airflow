@@ -1,8 +1,6 @@
-apache-airflow
-apache-airflow[postgres]
-apache-airflow-providers-postgres
-apache-airflow-providers-docker
-apache-airflow-providers-ssh
-apache-airflow-providers-cncf-kubernetes
+apache-airflow-providers-postgres==2.3.0
+apache-airflow-providers-docker==2.3.0
+apache-airflow-providers-ssh==2.3.0
+apache-airflow-providers-cncf-kubernetes==2.1.0
 
 psycopg2-binary
