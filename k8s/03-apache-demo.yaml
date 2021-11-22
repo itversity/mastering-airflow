@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-demo
+  labels:
+    app: apache-demo
+spec:
+  selector:
+    matchLabels:
+      app: apache-demo
+  template:
+    metadata:
+      labels:
+        app: apache-demo
+    spec:
+      containers:
+      - name: apache-demo
+        image: ubuntu/apache2
+        volumeMounts:
+        - name: retail-db-json
+          mountPath: /retail_db_json
+      volumes:
+      - name: retail-db-json
+        hostPath:
+          path: /retail_db_json
+

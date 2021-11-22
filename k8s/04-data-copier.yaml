@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-copier
+spec:
+  ttlSecondsAfterFinished: 30
+  template:
+    spec:
+      containers:
+      - name: data-copier
+        image: dgadiraju/data-copier:latest
+        command: ["env"]
+        env:
+        - name: "BASE_DIR"
+          value: "/retail_db_json"
+        volumeMounts:
+        - name: retail-db-json
+          mountPath: /retail_db_json
+      volumes:
+      - name: retail-db-json
+        hostPath:
+          path: /retail_db_json
+      imagePullSecrets:
+      - name: dockerhubcred
+      restartPolicy: Never
+  backoffLimit: 4

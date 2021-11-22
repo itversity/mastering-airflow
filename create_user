@@ -1,0 +1,6 @@
+airflow users create \
+    --username admin \
+    --firstname Durga \
+    --lastname Gadiraju \
+    --role Admin \
+    --email support@itversity.com

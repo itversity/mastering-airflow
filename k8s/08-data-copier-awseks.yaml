@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: data-copier
+spec:
+  containers:
+    - name: data-copier
+      image: 582845781536.dkr.ecr.us-east-1.amazonaws.com/data-copier:latest
+      command: [ "data_copier", "departments,categories" ]
+      env:
+        - name: "APP_ENV"
+          value: "aws"
+        - name: "BASE_DIR"
+          value: "s3://itv-retail/retail_db_json"
+        - name: "DB_HOST"
+          value: "retail.cfrxujtpbrro.us-east-1.rds.amazonaws.com"
+        - name: "DB_PORT"
+          value: "5432"
+        - name: "DB_NAME"
+          value: "retail_db"
+        - name: "DB_USER"
+          valueFrom:
+            secretKeyRef:
+              name: retail-db-secrets
+              key: retail-db-user
+        - name: "DB_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: retail-db-secrets
+              key: retail-db-pass
+  imagePullSecrets:
+    - name: awsecrcred
+  restartPolicy: Never
