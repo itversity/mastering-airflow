@@ -18,5 +18,9 @@ for file_name in os.listdir(data_set_dir_path):
     df_grouped = df.groupby('order_date')
 
     for file_name, data_to_be_saved in map(lambda dfg: (dfg[0], dfg[1]), df_grouped):
-        data_to_be_saved.to_csv(f'{target_base_dir}/{target_data_set_dir}/part-{file_name[:10]}')
+        data_to_be_saved.to_csv(
+            f'{target_base_dir}/{target_data_set_dir}/part-{file_name[:10]}',
+            header=None,
+            index=False
+        )
         print(f'Data for date {file_name} is successfully saved')
