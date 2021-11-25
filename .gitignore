@@ -2,3 +2,5 @@ airflow
 af-venv
 .idea
 .DS_Store
+/archive/
+__pycache__

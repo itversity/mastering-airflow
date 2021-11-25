@@ -4,7 +4,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.models import Variable
-
+from airflow.models.baseoperator import chain
 from file_converter import convert
 
 args = {
@@ -14,23 +14,26 @@ args = {
 json_schemas_file_path = Variable.get('JSON_SCHEMAS_FILE_PATH')
 source_base_dir = Variable.get('SOURCE_BASE_DIR')
 target_base_dir = Variable.get('TARGET_BASE_DIR')
+data_set_dirs = Variable.get('DATA_SET_DIRS').split(',')
 
 with DAG(
-    dag_id='32_file_converter_variables_dag',
+    dag_id='33_file_converter_all_data_sets_dag',
     default_args=args,
     schedule_interval='0 0 * * *',
     start_date=days_ago(2),
     dagrun_timeout=timedelta(minutes=10)
 ) as dag:
-    convert_orders = PythonOperator(
-        task_id='convert_orders',
-        python_callable=convert,
-        op_kwargs={
-            'json_schemas_file_path': json_schemas_file_path,
-            'source_base_dir': source_base_dir,
-            'data_set_dir': 'orders',
-            'target_base_dir': target_base_dir
-        }
-    )
+    convert_tasks = [
+        PythonOperator(
+            task_id=f'convert_{data_set_dir}',
+            python_callable=convert,
+            op_kwargs={
+                'json_schemas_file_path': json_schemas_file_path,
+                'source_base_dir': source_base_dir,
+                'data_set_dir': data_set_dir,
+                'target_base_dir': target_base_dir
+            })
+        for data_set_dir in data_set_dirs
+    ]
 
-    convert_orders
+    chain(convert_tasks)
