@@ -4,3 +4,4 @@ af-venv
 .DS_Store
 /archive/
 __pycache__
+/archive/

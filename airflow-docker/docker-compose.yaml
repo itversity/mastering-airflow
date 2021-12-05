@@ -57,13 +57,13 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    PYTHONPATH: /opt/airflow/apps
+    PYTHONPATH: /opt/airflow/dev/
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./data:/opt/airflow/data
-    - ./apps:/opt/airflow/apps
+    - ./dev:/opt/airflow/dev
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -81,6 +81,8 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+    networks:
+      - itvdelabnw
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -89,6 +91,8 @@ services:
 
   redis:
     image: redis:latest
+    networks:
+      - itvdelabnw
     expose:
       - 6379
     healthcheck:
@@ -101,6 +105,8 @@ services:
   airflow-webserver:
     <<: *airflow-common
     command: webserver
+    networks:
+      - itvdelabnw
     ports:
       - 8080:8080
     healthcheck:
@@ -117,6 +123,8 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    networks:
+      - itvdelabnw
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
       interval: 10s
@@ -131,6 +139,8 @@ services:
   airflow-worker:
     <<: *airflow-common
     command: celery worker
+    networks:
+      - itvdelabnw
     healthcheck:
       test:
         - "CMD-SHELL"
@@ -152,6 +162,8 @@ services:
   airflow-triggerer:
     <<: *airflow-common
     command: triggerer
+    networks:
+      - itvdelabnw
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 10s
@@ -167,6 +179,8 @@ services:
     <<: *airflow-common
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
+    networks:
+      - itvdelabnw
     command:
       - -c
       - |
@@ -244,6 +258,8 @@ services:
     <<: *airflow-common
     profiles:
       - debug
+    networks:
+      - itvdelabnw
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: "0"
@@ -256,6 +272,8 @@ services:
   flower:
     <<: *airflow-common
     command: celery flower
+    networks:
+      - itvdelabnw
     ports:
       - 5555:5555
     healthcheck:
@@ -271,3 +289,7 @@ services:
 
 volumes:
   postgres-db-volume:
+
+networks:
+  itvdelabnw:
+    name: itvdelabnw
