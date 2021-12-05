@@ -5,7 +5,7 @@ from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.models import Variable
 from airflow.models.baseoperator import chain
-from file_converter import convert
+from archive.file_converter_sleep import convert
 
 args = {
     'owner': 'airflow'
@@ -17,11 +17,13 @@ target_base_dir = Variable.get('TARGET_BASE_DIR')
 data_set_dirs = Variable.get('DATA_SET_DIRS').split(',')
 
 with DAG(
-    dag_id='33_file_converter_all_data_sets_dag',
+    dag_id='34_file_converter_parallelism_dag',
     default_args=args,
     schedule_interval='0 0 * * *',
-    start_date=days_ago(2),
-    dagrun_timeout=timedelta(minutes=10)
+    start_date=days_ago(30),
+    dagrun_timeout=timedelta(minutes=10),
+    max_active_runs=1,
+    concurrency=2
 ) as dag:
     convert_tasks = [
         PythonOperator(

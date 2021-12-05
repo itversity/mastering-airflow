@@ -4,7 +4,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 
-from file_converter import convert
+from archive.file_converter import convert
 
 args = {
     'owner': 'airflow'

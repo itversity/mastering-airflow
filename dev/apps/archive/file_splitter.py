@@ -2,9 +2,9 @@ import os
 import pandas as pd
 
 
-source_base_dir = '/Users/itversity/Projects/Internal/bootcamp/itversity-material/mastering-airflow/data/retail_db'
+source_base_dir = '/data/retail_db'
 data_set_dir = 'orders'
-target_base_dir = '/Users/itversity/Projects/Internal/bootcamp/itversity-material/mastering-airflow/data/retail_db'
+target_base_dir = '/data/retail_db'
 target_data_set_dir = 'orders_by_date'
 
 os.makedirs(f'{target_base_dir}/{target_data_set_dir}', exist_ok=True)

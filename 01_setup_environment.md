@@ -53,11 +53,18 @@ python3 -m venv af-venv
 
 # Activate Virtual Environment
 source af-venv/bin/activate
+pip install --upgrade pip
 
 # Install OS Modules related to psycopg2
 sudo apt-get install libpq-dev
 
-# Install dependencies
+# Setup Airflow
+export AIRFLOW_VERSION=2.2.2
+PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+
+# Install additional dependencies
 pip install -r requirements.txt
 ```
 
@@ -100,10 +107,51 @@ Let us go through the Web UI and make sure that we can login.
 Let us go ahead and deploy our first DAG using Python Operator.
 
 ```python
+from airflow import DAG
+from airflow.utils.dates import days_ago
+from airflow.operators.python import PythonOperator
 
+
+args = {
+    'owner': 'itversity'
+}
+
+
+def hello_world(arg):
+    print(f'Hello World from {arg}')
+
+
+with DAG(
+    dag_id='01_hello_world_python',
+    default_args=args,
+    schedule_interval='0 0 * * *',
+    start_date=days_ago(2)
+) as dag:
+    hello_world_task = PythonOperator(
+        task_id='hello_world_task',
+        python_callable=hello_world,
+        op_kwargs={
+            'arg': 'itversity'
+        }
+    )
+    
+    hello_world_task
+
+
+if __name__ == "__main__":
+    dag.cli()
 ```
 
 ## Deploy and Validate First DAG.
+Let us deploy and validate the DAG developed using Python Operator.
+* Make sure to copy the Python script to **dags** folder with in **airflow-docker** folder.
+* Restart Airflow Webserver as well as Scheduler to see the DAG immediately.
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  restart airflow-webserver airflow-scheduler
 
+docker-compose -f airflow-docker/docker-compose.yaml ps
+```
+* Enable DAG and see if it will run successfully or not.
 
 
