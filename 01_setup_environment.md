@@ -36,6 +36,11 @@ Let us ensure that we have setup development folders properly to develop applica
 * As part of project directory **mastering-airflow**, make sure to create a folder by name **dev**.
 * In that make sure to create folders by name **apps** and **dags**.
 * **apps** have actual application with business logic where as **dags** will contain the logic related to Airflow DAGs.
+* Also make sure **dags** and **apps** folders exists as part of **airflow-docker** folder.
+```shell
+# Run this command as part of airflow-docker folder
+mkdir -p ./dags ./plugins ./logs ./apps
+```
 * These will be mounted on to the docker containers on which Airflow components are going to run.
 
 ## Setup Python Virtual Environment
@@ -48,6 +53,9 @@ python3 -m venv af-venv
 
 # Activate Virtual Environment
 source af-venv/bin/activate
+
+# Install OS Modules related to psycopg2
+sudo apt-get install libpq-dev
 
 # Install dependencies
 pip install -r requirements.txt
@@ -71,6 +79,7 @@ docker-compose -f airflow-docker/docker-compose.yaml up -d --build
 * Make sure to confirm whether all the processes are up and healthy or not using the below command.
 
 ```shell
+echo -e "AIRFLOW_UID=$(id -u)" > airflow-docker/.env
 docker-compose -f airflow-docker/docker-compose.yaml up ps
 ```
 
