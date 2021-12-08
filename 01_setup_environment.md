@@ -77,6 +77,12 @@ Let us create external docker network before launching Airflow using Docker.
 ## Start Airflow using Docker
 
 Let us start Airflow using Docker over the network created as part of previous lecture.
+* Make sure to add **AIRFLOW_UID** to **.env** file.
+
+```shell
+echo -e "AIRFLOW_UID=$(id -u)" > airflow-docker/.env
+```
+
 * We will run `docker-compose up` command from the project directory **mastering-airflow** in detach mode.
 
 ```shell
@@ -86,8 +92,7 @@ docker-compose -f airflow-docker/docker-compose.yaml up -d --build
 * Make sure to confirm whether all the processes are up and healthy or not using the below command.
 
 ```shell
-echo -e "AIRFLOW_UID=$(id -u)" > airflow-docker/.env
-docker-compose -f airflow-docker/docker-compose.yaml up ps
+docker-compose -f airflow-docker/docker-compose.yaml ps
 ```
 
 * You can also validate whether all the folders are mounted or not using below commands.
