@@ -71,6 +71,7 @@ Let us understand how to manage DAGs using Airflow CLI.
 
 Let us get an overview of Airflow Variables.
 * Airflow Variables are primarily used to define reusable application level settings across tasks with in a DAG or across multiple DAGs.
+* Airflow Variables are not encrypted by default. It is a good practice to make sure they are encrypted. Airflow Administrator team can take care of it, if it is recommended by development team.
 * We can define variables using Web UI or CLI.
 * Let us define Airflow Variable using Airflow Web UI and understand how to access it using Airflow APIs.
   * Key: **SOURCE_BASE_DIR**
@@ -88,8 +89,77 @@ Variable.get('SOURCE_BASE_DIR')
 
 ## Managing Variables using Airflow CLI
 
+Let us understand how to manage airflow variables using Airflow CLI.
+* If you setup Airflow locally, you should be able to run `airflow` commands directly.
+* In case of Airflow on Docker, make sure to connect to bash using the following ommand.
+
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  exec airflow-webserver \
+  bash
+```
+
+* Now run the command `airflow -h` to see list of Airflow components that can be managed by CLI.
+* We can use `airflow variables -h` to see the permitted operations on Airflow Variables via CLI.
+* Here are the examples for some standard operations.
+
+```shell
+airflow variables list
+airflow variables get SOURCE_BASE_DIR
+airflow variables delete SOURCE_BASE_DIR
+airflow variables set SOURCE_BASE_DIR /opt/airflow/data/retail_db
+```
+
 ## Overview of Airflow Connections
 
-## Intertask Communication using XCom - return value
+Let us get an overview of Airflow Connections.
+* Airflow Connections are similar to Airflow Variables. However, we typically used to preserve connectivity information.
+* Here are some of the common scenarios where we use connections.
+  * Connect to remote server via SSH.
+  * Connect to remote database by passing server, port, schema or database, username, password, etc
+* Here are the high level steps we typically follow with respect to connections.
+  * Create connection using Airflow Web UI or CLI. Each connection will have unique connection id.
+  * Use relevant operator while defining the task with connection id.
+  * Operators such as SSHOperator, PostgresOperator, etc can leverage these connections.
 
-## Overview of XCom pull and push
+## Creating Airflow Connections using Web UI
+
+Let us understand how to create airflow connections using Web UI.
+* Go to Admin and then go to Web UI.
+* Create connection of type SSH with some dummy names.
+* We cannot test unless we have a server and valid details to connect to it.
+* For now let us save with out testing it.
+* Airflow Connection details should be encrypted. It will be taken care by Airflow Administrators when the Airflow is setup.
+* We will see more appropriate examples in subsequent modules.
+
+## Manaing Airflow Connections using Airflow CLI
+
+Let us understand how to manage airflow connections using Airflow CLI.
+
+* If you setup Airflow locally, you should be able to run `airflow` commands directly.
+* In case of Airflow on Docker, make sure to connect to bash using the following ommand.
+
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  exec airflow-webserver \
+  bash
+```
+
+* Now run the command `airflow -h` to see list of Airflow components that can be managed by CLI.
+* We can use `airflow connections -h` to see the permitted operations on Airflow Connections via CLI.
+* Here are the examples for some standard operations.
+
+```shell
+airflow connections list
+airflow connections get ssh_demo
+airflow connections delete ssh_demo
+```
+* We can also add connections using CLI. You can review the help to see what all details needs to be passed.
+
+```shell
+airflow connections add ssh_demo \
+  --conn-type ssh \
+  --conn-host dummy \
+  --conn-login dummy \
+  --conn-password dummy
+```

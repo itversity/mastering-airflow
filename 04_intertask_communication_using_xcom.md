@@ -1,4 +1,4 @@
-# Pipeline using SQL Operator
+# Intertask Communication using XCom
 
 ## Setup Retail data set
 
