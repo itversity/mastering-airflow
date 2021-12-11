@@ -70,7 +70,7 @@ Let us understand how to manage DAGs using Airflow CLI.
 ## Airflow Variables
 
 Let us get an overview of Airflow Variables.
-* Airflow Variables are primarily used to define reusable settings across tasks with in a DAG or across multiple DAGs.
+* Airflow Variables are primarily used to define reusable application level settings across tasks with in a DAG or across multiple DAGs.
 * We can define variables using Web UI or CLI.
 * Let us define Airflow Variable using Airflow Web UI and understand how to access it using Airflow APIs.
   * Key: **SOURCE_BASE_DIR**
