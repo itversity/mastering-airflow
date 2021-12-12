@@ -273,13 +273,156 @@ docker run \
   pythonapp
 ```
 
-## Running Applications remotely using SSHHook
+## Validate SSH Connectivity between Airflow and Pythonapp
 
+As the container is created with pythonapp, let us ensure that Airflow servers (containers) can talk to the new container or server.
+* Connect to the Airflow Webserver via bash.
+
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  exec airflow-webserver \
+  bash
+```
+
+* Run SSH Command to confirm the connectivity to pythonapp.
+
+```shell
+ssh itversity@pythonapp
+
+# exit and then run below command from Airflow container or server
+ssh itversity@pythonapp "hostname -f"
+```
+
+## Airflow DAG with task using SSHOperator and SSHHook
+
+Let us understand how to use combination of SSHOperator and SSHHook to develop the tasks to run applications or commands on remote server.
+* Keep in mind that this is not the common way as we might have to hard code the password and other details.
+```python
+from datetime import timedelta
+
+from airflow import DAG
+from airflow.providers.ssh.operators.ssh import SSHOperator
+from airflow.utils.dates import days_ago
+from airflow.providers.ssh.hooks.ssh import SSHHook
+
+args = {
+    'owner': 'airflow',
+}
+
+
+ssh_hook = SSHHook(
+    remote_host='pythonapp',
+    username='itversity',
+    password='itversity'
+)
+
+with DAG(
+    dag_id='05_command_ssh_hook',
+    default_args=args,
+    schedule_interval='0 0 * * *',
+    start_date=days_ago(2),
+    dagrun_timeout=timedelta(minutes=60),
+) as dag:
+    run_this = SSHOperator(
+        task_id='ssh_command_task',
+        ssh_hook=ssh_hook,
+        command='hostname -f',
+    )
+
+    run_this
+
+
+if __name__ == "__main__":
+    dag.cli()
+
+```
 ## Creating SSH Connection using Airflow Web UI
 
-## Running Applications remotely using SSH Connection
+Let us go ahead and create SSH Connection using Airflow Web UI.
+* Connection Id: ssh_pythonapp
+* Host: pythonapp
+* Login: itversity
+* Password: itversity
+
+Make sure to click on save to add the connection. You can try validating the connection details by clicking on Test.
+* If the test fails, ignore and save.
+
+## Airflow DAG with task using SSHOperator and connection id
+
+Let us understand how to use combination of SSHOperator and Connection added using Airflow Web UI to develop the tasks to run applications or commands on remote server.
+
+```python
+from datetime import timedelta
+
+from airflow import DAG
+from airflow.providers.ssh.operators.ssh import SSHOperator
+from airflow.utils.dates import days_ago
+
+args = {
+    'owner': 'airflow',
+}
+
+with DAG(
+    dag_id='06_command_ssh_connection',
+    default_args=args,
+    schedule_interval='0 0 * * *',
+    start_date=days_ago(2),
+    dagrun_timeout=timedelta(minutes=60),
+) as dag:
+    run_this = SSHOperator(
+        task_id='ssh_command_task',
+        ssh_conn_id='ssh_pythonapp',
+        command='hostname -f',
+    )
+
+    run_this
+
+
+if __name__ == "__main__":
+    dag.cli()
+
+```
+
+## Overview of Airflow Tasks and Operators to run Queries
+
+Let us get an overview of Airflow Tasks and Operators to run Queries.
+* There are providers for most of the common databases such as Postgres, MySQL, etc.
+* The providers of respective databases provide operators to connect to the database and run queries.
+* We need to pass database connectivity information to these operators while defining the tasks. We can leverage connections to pass the connectivity information.
+* If you setup Airflow using Docker, most of the providers for common databases are already installed.
+* We can review the providers using Airflow Web UI by going to providers as part of Admin drop down menu.
+* To connect to most of the databases we need following information:
+  * Host IP or DNS Alias on which Database Server is running
+  * Port number on which Database Server is running
+  * Schema (Oracle) or Database Name (Postgres, MySQL, etc) in which the tables that are in the scope of requirements are available.
+  * Username - the user should have relevant permissions on the tables against which we would like to perform operations.
+  * Password
+* Here are the high level steps that are involved in defining task using Operator to connect to the database.
+  * Make sure relevant provider is installed.
+  * Make sure there is a database server with right database or schema exists. Also, we need to ensure that there is a user who have access to the underlying tables.
+  * Validate connectivity between the Airflow servers and the server on which database is running.
+  * Create connection object using appropriate connection type and relevant information.
+  * Develop the DAG with task using relevant operator to run queries against underlying database.
+* We will take care of demo using Postgres as the target database.
+
+## Setup Provider for PostgresOperator
+
+Go to the Airflow Web UI and confirm whether Provider for Postgres is installed or not.
+* If the provider is not installed, use below `pip` command to setup provider to interact with Postgres Databases.
+
+```shell
+python3 -m pip install apache-airflow-providers-postgres
+```
+
+* You can also validate by running this Python code to confirm whether it can be used as part of developing DAGs.
+
+```python
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+```
 
 ## Setup Retail data set
+
+We need to have a Postgres Database as part of Postgres Database Server with tables and data. Make sure to clone this repository so that we can setup required databases and tables later.
 
 ```shell
 # use /home/ubuntu/environment
@@ -289,6 +432,8 @@ rm -rf retail_db/.git
 ```
 
 ## Setup Postgres Database Server
+
+Let us go ahead and setup Postgres Database Server as part of itvdelabnw network. We will eventually create **retail_db** database along with tables using the repository cloned as part of last lecture.
 
 ```shell
 docker run \
@@ -302,8 +447,13 @@ docker run \
   postgres:13
 ```
 
-
 ## Setup Retail Database using Postgres
+
+As the Postgres Database Server is up and running using Docker, let us go ahead and setup the following:
+* Database: **retail_db**
+* User: **retail_user**
+* Grant all permissions on **retail_db** database to **retail_user**.
+* Make sure to create tables in the database and also load the data into the tables using provided scripts.
 
 ```shell
 docker exec -i -t retail_pg psql -U postgres
@@ -350,7 +500,5 @@ Let us go ahead and create connection using Airflow Web UI.
   * Port: **5432**
 * Before saving, we can test to confirm whether the information is correct or not.
 
-## Managing Connections using Airflow CLI
-
-## Getting Started with SQL Operator
+## Develop Airflow DAG using PostgresOperator
 
