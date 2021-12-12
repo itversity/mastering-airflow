@@ -11,8 +11,9 @@ RUN adduser --disabled-password --gecos "" itversity && \
     adduser itversity sudo
 
 RUN sed -i "s/%sudo\tALL=(ALL:ALL) ALL/%sudo\tALL=(ALL:ALL) NOPASSWD:ALL/g" /etc/sudoers
-
+COPY --chown=itversity:itversity deploy.sh /deploy.sh
 USER itversity
 RUN python3 -m pip install jupyterlab
 
-CMD ["/home/itversity/.local/bin/jupyter", "lab", "--ip", "0.0.0.0"]
+RUN chmod u+x /deploy.sh
+CMD ["/deploy.sh"]

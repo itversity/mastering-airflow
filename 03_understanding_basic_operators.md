@@ -259,6 +259,19 @@ docker-compose -f airflow-docker/docker-compose.yaml \
 
 Let us go ahead and setup Docker Container with SSH so that we can define task using SSHOperator.
 * Create docker container using SSH image with in the network **itvdelabnw**.
+* Go to **dockers/sshdemo** and run following commands to create the container.
+
+```shell
+docker build -t pythonapp .
+
+docker run \
+  --name pythonapp \
+  --hostname pythonapp \
+  --network itvdelabnw \
+  -p 8888:8888 \
+  -d \
+  pythonapp
+```
 
 ## Running Applications remotely using SSHHook
 
