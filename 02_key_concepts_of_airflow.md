@@ -85,13 +85,13 @@ Variable.get('SOURCE_BASE_DIR')
 ```
 
 * We can also manage Airflow Variables using `Variable` from `airflow.models` module. It exposes functions such as `set`, `delete`, etc on top of `get`.
-* We will see Airflow Variables as part of DAGs which we are going develop in subsequent modules or sections.
+* We will see Airflow Variables as part of DAGs which we are going to develop in subsequent modules or sections.
 
 ## Managing Variables using Airflow CLI
 
 Let us understand how to manage airflow variables using Airflow CLI.
 * If you setup Airflow locally, you should be able to run `airflow` commands directly.
-* In case of Airflow on Docker, make sure to connect to bash using the following ommand.
+* In case of Airflow on Docker, make sure to connect to bash using the following command.
 
 ```shell
 docker-compose -f airflow-docker/docker-compose.yaml \
