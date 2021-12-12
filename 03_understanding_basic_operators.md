@@ -216,15 +216,53 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 ## Overview of using SSH Operator
 
+Let us go through the details of defining tasks using SSH Operator.
+* One of the common pattern with respect to running applications using Airflow is to run applications remotely.
+* We can use **SSHOperator** to run applications on remote servers.
+* We can run shell scripts as well as applications developed using programming languages such as Python.
+
+Here are the high level steps of defining tasks using SSH Operator.
+* Make sure to have SSH Provider is installed as part of Python environment.
+* We need to have a remote server accessible via SSH.
+* We can define connection either by using SSHHook as part of DAG Code or by creating connection as part of Airflow Environment and use it as part of the DAG Code.
+* We need to ensure we have a shell script or valid command which can be run on remote server
+* We can then define task as part of the DAG Code using `SSHOperator`.
+
 ## Installing Provider for SSH Operator
 
+We can validate whether provider exists for SSH Operator or not and then install using `pip` if it does not exists.
+* Here is the command to check if SSH Provider is installed or not.
+
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  exec airflow-webserver \
+  airflow providers list
+```
+
+* If it does not exist, we can install using following command.
+
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  exec airflow-webserver \
+  pip install apache-airflow-providers-ssh
+```
+
+* We can launch Python and then validate by running `from airflow.providers.ssh.operators.ssh import SSHOperator`.
+
+```shell
+docker-compose -f airflow-docker/docker-compose.yaml \
+  exec airflow-webserver \
+  python
+```
+
 ## Create Docker Container for SSH Operator
+
+Let us go ahead and setup Docker Container with SSH so that we can define task using SSHOperator.
+* Create docker container using SSH image with in the network **itvdelabnw**.
 
 ## Running Applications remotely using SSHHook
 
 ## Creating SSH Connection using Airflow Web UI
-
-## Managing Connections using Airflow CLI
 
 ## Running Applications remotely using SSH Connection
 
