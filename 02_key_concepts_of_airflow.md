@@ -132,7 +132,7 @@ Let us understand how to create airflow connections using Web UI.
 * Airflow Connection details should be encrypted. It will be taken care by Airflow Administrators when the Airflow is setup.
 * We will see more appropriate examples in subsequent modules.
 
-## Manaing Airflow Connections using Airflow CLI
+## Managing Airflow Connections using Airflow CLI
 
 Let us understand how to manage airflow connections using Airflow CLI.
 
