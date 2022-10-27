@@ -5,3 +5,5 @@ af-venv
 /archive/
 __pycache__
 /archive/
+derby.log
+metastore_db

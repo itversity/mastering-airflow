@@ -1,4 +1,4 @@
-# Setup Environment
+# Setup Airflow Environment using Docker
 
 ## Clone the repository
 
